@@ -1,0 +1,70 @@
+from tkinter import messagebox, simpledialog
+class Task:
+    def __init__(self, title, discriptoin):
+        self.title = title
+        self.discriptoin = discriptoin
+
+    def __str__(self):
+        return f'{self.title}: {self.discriptoin}'
+class TaskManagerApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title('Система управления задачами студентов')
+
+        self.tasks = []
+
+        self.task_listbox = tk.Listbox(root, width=50, height=15)
+        self.task_listbox.pack(pady=10)
+
+        self.add_button = tk.Button(root, text='Добавить задачу', command=self.add_task)
+        self.add_button.pack(pady=5)
+
+        self.edit_button = tk.Button(root, text='Редактировать задачу', command=self.edit_task)
+        self.edit_button.pack(pady=5)
+
+        self.delete_button = tk.Button(root, text='Удалить задачу', command=self.delete_task)
+        self.delete_button.pack(pady=5)
+
+        self.update_task_listbox()
+
+    def add_task(self):
+        title = simpledialog.askstring('Название задачи', 'Введите название задачи:')
+        if title:
+            discription = simpledialog.askstring('Описание задачи', 'Введите описание задачи:')
+            if discription:
+                task = Task(title, discription)
+                self.tasks.append(task)
+                self.update_task_listbox()
+
+    def edit_task(self):
+        selected_index = self.task_listbox.curselection()
+        if selected_index:
+            task = self.tasks[selected_index[0]]
+            new_title = simpledialog.askstring('Редактировать название', 'Введите новое название задачи:', initialvalue=task.title)
+            if new_title:
+                new_discription = simpledialog.askstring('Редактировать описание', 'Введите новое описание задачи:', initialvalue=task.discriptoin)
+                if new_discription:
+                    task.title = new_title
+                    task.discriptoin = new_discription
+                    self.update_task_listbox()
+        else:
+            messagebox.showwarning('Редактирование задачи', 'Выберите задачу для редактирования.')
+
+    def delete_task(self):
+        selected_index = self.task_listbox.curselection()
+        if selected_index:
+            task = self.tasks[selected_index[0]]
+            self.tasks.remove(task)
+            self.update_task_listbox()
+            messagebox.showinfo('Удаление задачи', f'Задача"{task.title}" удалена.')
+        else:
+            messagebox.showwarning('Удаление задачи', 'Выберите задачу для удаления.')
+    def update_task_listbox(self):
+        self.task_listbox.delete(0, tk.END)
+        for task in self.tasks:
+            self.task_listbox.insert(tk.END, str(task))
+
+if __name__ == '__main__':
+    root = tk.Tk()
+    app = TaskManagerApp(root)
+    root.mainloop()
